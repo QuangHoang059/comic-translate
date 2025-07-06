@@ -1,0 +1,106 @@
+<div class="comic-card result-container">
+  <h2 class="comic-subtitle">🎯 Translation Progress</h2>
+  
+  <!-- Progress Steps -->
+  <div class="progress-steps">
+    <div 
+      *ngFor="let step of steps; let i = index" 
+      class="progress-step"
+      [ngClass]="getStepClass(step)"
+    >
+      <div class="step-icon">{{ step.icon }}</div>
+      <div class="step-content">
+        <div class="step-label">{{ step.label }}</div>
+        <div class="step-status">
+          <span *ngIf="step.completed" class="status-completed">✅ Done</span>
+          <span *ngIf="step.key === currentStep && isProcessing" class="status-processing">
+            <div class="comic-loading"></div>
+            Processing...
+          </span>
+          <span *ngIf="!step.completed && step.key !== currentStep" class="status-pending">⏳ Waiting</span>
+        </div>
+      </div>
+      <div *ngIf="i < steps.length - 1" class="step-connector"></div>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-message">
+    <div class="error-icon">❌</div>
+    <div class="error-content">
+      <h4>Oops! Something went wrong</h4>
+      <p>{{ error }}</p>
+      <button class="comic-btn comic-btn-warning" (click)="restartProcess()">
+        🔄 Try Again
+      </button>
+    </div>
+  </div>
+
+  <!-- Text Blocks Info -->
+  <div *ngIf="processResponse && processResponse.blocks.length > 0" class="blocks-info comic-card">
+    <h3 class="comic-subtitle">📝 Detected Text Blocks</h3>
+    <div class="blocks-summary">
+      <div class="summary-item">
+        <span class="summary-icon">🔢</span>
+        <span class="summary-text">{{ processResponse.blocks.length }} text blocks found</span>
+      </div>
+      <div class="summary-item">
+        <span class="summary-icon">🌍</span>
+        <span class="summary-text">{{ sourceLanguage }} → {{ targetLanguage }}</span>
+      </div>
+    </div>
+    
+    <div class="blocks-list">
+      <div 
+        *ngFor="let block of processResponse.blocks; let i = index" 
+        class="block-item"
+      >
+        <div class="block-header">
+          <span class="block-number">Block {{ i + 1 }}</span>
+          <span class="block-position">{{ block.xyxy[0] }}, {{ block.xyxy[1] }}</span>
+        </div>
+        <div class="block-content">
+          <div *ngIf="block.text" class="original-text">
+            <strong>Original:</strong> {{ block.text }}
+          </div>
+          <div *ngIf="block.translation" class="translated-text">
+            <strong>Translation:</strong> {{ block.translation }}
+          </div>
+          <div *ngIf="!block.text && !block.translation" class="no-text">
+            <em>Text detection in progress...</em>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Result Image -->
+  <div *ngIf="resultImageUrl" class="result-image-container">
+    <h3 class="comic-subtitle">🎉 Translation Complete!</h3>
+    <div class="image-wrapper">
+      <img [src]="resultImageUrl" alt="Translated Comic" class="result-image">
+    </div>
+    
+    <div class="result-actions">
+      <button class="comic-btn comic-btn-success" (click)="downloadResult()">
+        💾 Download Result
+      </button>
+      <button class="comic-btn comic-btn-secondary" (click)="restartProcess()">
+        🔄 Translate Another
+      </button>
+    </div>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isProcessing && !error" class="loading-state">
+    <div class="loading-animation">
+      <div class="comic-loading large"></div>
+    </div>
+    <p class="loading-text">
+      Working on your comic translation... This might take a few minutes! ⏰
+    </p>
+    <div class="comic-bubble">
+      <p>💡 <strong>Did you know?</strong> Our AI is analyzing each text bubble, understanding the context, and creating natural translations that fit the comic style!</p>
+    </div>
+  </div>
+</div>

@@ -6,7 +6,7 @@ from typing import List
 from PySide6 import QtCore
 from PySide6.QtGui import QColor
 
-from modules.detection.processor import TextBlockDetector
+from modules.detection.processor import TextBlockDetectorProcessor
 from modules.ocr.processor import OCRProcessor
 from modules.translation.processor import Translator
 from modules.utils.textblock import TextBlock, sort_blk_list
@@ -49,7 +49,7 @@ class ComicTranslatePipeline:
     def detect_blocks(self, load_rects=True):
         if self.main_page.image_viewer.hasPhoto():
             if self.block_detector_cache is None:
-                self.block_detector_cache = TextBlockDetector(self.main_page.settings_page)
+                self.block_detector_cache = TextBlockDetectorProcessor(self.main_page.settings_page)
             image = self.main_page.image_viewer.get_cv2_image()
             blk_list = self.block_detector_cache.detect(image)
 
@@ -213,7 +213,7 @@ class ComicTranslatePipeline:
                 break
 
             if self.block_detector_cache is None:
-                self.block_detector_cache = TextBlockDetector(self.main_page.settings_page)
+                self.block_detector_cache = TextBlockDetectorProcessor(self.main_page.settings_page)
             
             blk_list = self.block_detector_cache.detect(image)
 

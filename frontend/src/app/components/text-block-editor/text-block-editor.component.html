@@ -1,0 +1,145 @@
+<div class="text-block-editor">
+  <div class="editor-header">
+    <h3 class="comic-subtitle">
+      <span class="editor-icon">📝</span>
+      Text Block Editor
+    </h3>
+    
+    <div class="editor-controls">
+      <button 
+        type="button"
+        class="comic-btn comic-btn-secondary toggle-btn"
+        (click)="toggleTextDisplay()"
+      >
+        {{ showOriginalText ? '🌍 Show Original' : '🎯 Show Translation' }}
+      </button>
+      
+      <div class="block-count">
+        <span class="count-label">{{ blocks.length }} blocks</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="editor-content">
+    <!-- No blocks message -->
+    <div *ngIf="blocks.length === 0" class="no-blocks-message comic-bubble">
+      <h4>No text blocks detected</h4>
+      <p>Upload an image and run text detection to see blocks here.</p>
+    </div>
+
+    <!-- Blocks list -->
+    <div *ngIf="blocks.length > 0" class="blocks-list">
+      <div 
+        *ngFor="let block of blocks; let i = index"
+        class="block-item"
+        [class.selected]="selectedBlockId === block.id"
+        [class.editing]="editingBlockId === block.id"
+        (click)="selectBlock(block)"
+      >
+        <!-- Block Header -->
+        <div class="block-header">
+          <div class="block-info">
+            <span class="block-number">Block {{ i + 1 }}</span>
+            <span class="block-status">
+              {{ getStatusIcon(getBlockStatus(block)) }}
+              {{ getStatusLabel(getBlockStatus(block)) }}
+            </span>
+          </div>
+          
+          <div class="block-actions">
+            <button 
+              *ngIf="!readonly"
+              type="button"
+              class="action-btn edit-btn"
+              (click)="startEditing(block); $event.stopPropagation()"
+              [disabled]="editingBlockId === block.id"
+            >
+              ✏️
+            </button>
+            <button 
+              *ngIf="!readonly"
+              type="button"
+              class="action-btn delete-btn"
+              (click)="deleteBlock(block); $event.stopPropagation()"
+            >
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <!-- Block Details -->
+        <div class="block-details">
+          <div class="block-meta">
+            <span class="meta-item">
+              <strong>Position:</strong> {{ getBlockPosition(block) }}
+            </span>
+            <span class="meta-item">
+              <strong>Size:</strong> {{ getBlockSize(block) }}
+            </span>
+            <span class="meta-item">
+              <strong>Angle:</strong> {{ getBlockAngle(block) }}
+            </span>
+          </div>
+        </div>
+
+        <!-- Text Content -->
+        <div class="block-content">
+          <!-- Original Text -->
+          <div class="text-section" [class.hidden]="!showOriginalText">
+            <label class="text-label">
+              <span class="label-icon">🌍</span>
+              Original Text
+            </label>
+            
+            <div *ngIf="editingBlockId !== block.id" class="text-display">
+              <div *ngIf="hasText(block)" class="text-content">
+                {{ block.text }}
+              </div>
+              <div *ngIf="!hasText(block)" class="no-text">
+                <em>No text detected</em>
+              </div>
+            </div>
+            
+            <textarea 
+              *ngIf="editingBlockId === block.id && !readonly"
+              class="comic-input text-input"
+              [(ngModel)]="block.text"
+              (blur)="stopEditing()"
+              (keydown.enter)="stopEditing()"
+              placeholder="Enter original text..."
+              rows="3"
+              #textInput
+            ></textarea>
+          </div>
+
+          <!-- Translation -->
+          <div class="text-section" [class.hidden]="showOriginalText">
+            <label class="text-label">
+              <span class="label-icon">🎯</span>
+              Translation
+            </label>
+            
+            <div *ngIf="editingBlockId !== block.id" class="text-display">
+              <div *ngIf="hasTranslation(block)" class="text-content">
+                {{ block.translation }}
+              </div>
+              <div *ngIf="!hasTranslation(block)" class="no-text">
+                <em>No translation available</em>
+              </div>
+            </div>
+            
+            <textarea 
+              *ngIf="editingBlockId === block.id && !readonly"
+              class="comic-input text-input"
+              [(ngModel)]="block.translation"
+              (blur)="stopEditing()"
+              (keydown.enter)="stopEditing()"
+              placeholder="Enter translation..."
+              rows="3"
+            ></textarea>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

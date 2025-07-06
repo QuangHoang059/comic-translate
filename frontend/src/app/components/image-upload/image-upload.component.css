@@ -1,0 +1,254 @@
+.upload-container {
+  max-width: 600px;
+  margin: 0 auto;
+}
+
+.upload-area {
+  border: 3px dashed var(--comic-primary);
+  border-radius: var(--comic-border-radius);
+  padding: 40px 20px;
+  text-align: center;
+  cursor: pointer;
+  transition: all 0.3s ease;
+  background: rgba(255, 255, 255, 0.8);
+  margin: 20px 0;
+}
+
+.upload-area:hover {
+  border-color: var(--comic-secondary);
+  background: rgba(255, 255, 255, 0.9);
+  transform: scale(1.02);
+}
+
+.upload-area.drag-over {
+  border-color: var(--comic-success);
+  background: rgba(6, 255, 165, 0.1);
+  transform: scale(1.05);
+}
+
+.upload-area.has-file {
+  border-style: solid;
+  border-color: var(--comic-success);
+  background: rgba(6, 255, 165, 0.1);
+}
+
+.upload-placeholder {
+  padding: 20px;
+}
+
+.upload-icon {
+  font-size: 4rem;
+  margin-bottom: 20px;
+  animation: bounce 2s infinite;
+}
+
+@keyframes bounce {
+  0%, 20%, 50%, 80%, 100% {
+    transform: translateY(0);
+  }
+  40% {
+    transform: translateY(-10px);
+  }
+  60% {
+    transform: translateY(-5px);
+  }
+}
+
+.upload-text {
+  font-size: 1.2rem;
+  margin: 10px 0;
+  color: var(--comic-text-primary);
+}
+
+.upload-hint {
+  font-size: 0.9rem;
+  color: var(--comic-text-secondary);
+  margin: 5px 0;
+}
+
+.file-preview {
+  padding: 20px;
+}
+
+.file-info {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  background: white;
+  padding: 15px;
+  border-radius: var(--comic-border-radius);
+  border: var(--comic-border);
+  box-shadow: var(--comic-shadow);
+}
+
+.file-icon {
+  font-size: 2rem;
+  margin-right: 15px;
+}
+
+.file-details {
+  flex: 1;
+  text-align: left;
+}
+
+.file-name {
+  font-weight: bold;
+  margin: 0 0 5px 0;
+  color: var(--comic-text-primary);
+}
+
+.file-size {
+  margin: 0;
+  color: var(--comic-text-secondary);
+  font-size: 0.9rem;
+}
+
+.remove-file-btn {
+  background: none;
+  border: none;
+  font-size: 1.5rem;
+  cursor: pointer;
+  padding: 5px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+}
+
+.remove-file-btn:hover {
+  background: rgba(255, 0, 110, 0.1);
+  transform: scale(1.1);
+}
+
+.language-selection {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  gap: 20px;
+  align-items: end;
+  margin: 30px 0;
+}
+
+.language-group {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.comic-label {
+  font-family: 'Comic Neue', cursive;
+  font-weight: bold;
+  color: var(--comic-text-primary);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 1.1rem;
+}
+
+.label-icon {
+  font-size: 1.2rem;
+}
+
+.arrow-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 10px;
+}
+
+.translation-arrow {
+  font-size: 2rem;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.1);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.upload-actions {
+  text-align: center;
+  margin: 30px 0;
+}
+
+.upload-btn {
+  font-size: 1.3rem;
+  padding: 15px 30px;
+  min-width: 200px;
+}
+
+.upload-btn:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+  transform: none !important;
+  box-shadow: var(--comic-shadow) !important;
+}
+
+.loading-content {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tips-bubble {
+  margin-top: 30px;
+  text-align: left;
+}
+
+.tips-bubble h4 {
+  margin: 0 0 15px 0;
+  color: var(--comic-primary);
+  font-family: 'Bangers', cursive;
+  font-size: 1.3rem;
+  letter-spacing: 1px;
+}
+
+.tips-bubble ul {
+  margin: 0;
+  padding-left: 20px;
+}
+
+.tips-bubble li {
+  margin: 8px 0;
+  color: var(--comic-text-secondary);
+  line-height: 1.4;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .language-selection {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+  
+  .arrow-container {
+    order: -1;
+  }
+  
+  .translation-arrow {
+    transform: rotate(90deg);
+  }
+  
+  .upload-area {
+    padding: 30px 15px;
+  }
+  
+  .upload-icon {
+    font-size: 3rem;
+  }
+  
+  .file-info {
+    flex-direction: column;
+    gap: 10px;
+    text-align: center;
+  }
+  
+  .file-details {
+    text-align: center;
+  }
+}

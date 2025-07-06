@@ -4,32 +4,32 @@ from ..utils.textblock import TextBlock
 from .factory import DetectionEngineFactory
 
 
-class TextBlockDetector:
+class TextBlockDetectorProcessor:
     """
-    Detector for finding text blocks in images.
+    model for finding text blocks in images.
     """
-    
-    def __init__(self, settings_page):
-        self.settings = settings_page 
+
+    def __init__(self, config: dict):
+        self.config = config
         self.engine = None
-        self.detector = 'RT-DETR-V2'  # Default Detector
-    
-    def initialize(self, detector: str = None) -> None:
-        if detector:
-            self.detector = detector
-            
-        if self.settings:
-            if not detector:
-                self.detector = self.settings.get_tool_selection('detector') or self.detector
-            
+        self.model = "RT-DETR-V2"  # Default model
+
+    def initialize(self, model: str = None) -> None:
+        if model:
+            self.model = model
+
+        if self.config:
+            if not model:
+                self.model = self.config.get("model") or self.model
+
             # Create appropriate engine
-            self.engine = DetectionEngineFactory.create_engine(self.settings, self.detector)
-    
+            self.engine = DetectionEngineFactory.create_engine(self.config, self.model)
+
     def detect(self, img: np.ndarray) -> list[TextBlock]:
         if self.engine is None:
             self.initialize()
-            
+
         if self.engine is None:
             raise ValueError("Detection engine not initialized")
-            
+
         return self.engine.detect(img)

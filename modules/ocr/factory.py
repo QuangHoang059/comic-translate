@@ -12,7 +12,7 @@ from .doctr_ocr import DocTROCR
 from .gemini_ocr import GeminiOCR
 
 class OCRFactory:
-    """Factory for creating appropriate OCR engines based on settings."""
+    """Factory for creating appropriate OCR engines based on config."""
     
     _engines = {}  # Cache of created engines
 
@@ -22,12 +22,12 @@ class OCRFactory:
     }
     
     @classmethod
-    def create_engine(cls, settings, source_lang_english: str, ocr_model: str) -> OCREngine:
+    def create_engine(cls, config:dict, source_lang_english: str, ocr_model: str) -> OCREngine:
         """
-        Create or retrieve an appropriate OCR engine based on settings.
+        Create or retrieve an appropriate OCR engine based on config.
         
         Args:
-            settings: Settings object with OCR configuration
+            config: config object with OCR configuration
             source_lang_english: Source language in English
             ocr_model: OCR model to use
             
@@ -35,51 +35,43 @@ class OCRFactory:
             Appropriate OCR engine instance
         """
         # Create a cache key based on model and language
-        cache_key = cls._create_cache_key(ocr_model, source_lang_english, settings)
+        cache_key = cls._create_cache_key(ocr_model, source_lang_english, config)
         
         # Return cached engine if available
         if cache_key in cls._engines:
             return cls._engines[cache_key]
         
         # Create engine based on model or language
-        engine = cls._create_new_engine(settings, source_lang_english, ocr_model)
+        engine = cls._create_new_engine(config, source_lang_english, ocr_model)
         cls._engines[cache_key] = engine
         return engine
     
     @classmethod
-    def _create_cache_key(cls, ocr_key: str,
+    def _create_cache_key(cls, ocr_model: str,
                         source_lang: str,
-                        settings) -> str:
+                        config: dict) -> str:
         """
         Build a cache key for all ocr engines.
 
         - Always includes per-ocr credentials (if available),
           so changing any API key, URL, region, etc. triggers a new engine.
-        - For LLM engines, also includes all LLM-specific settings
+        - For LLM engines, also includes all LLM-specific config
           (temperature, top_p, context, etc.).
         - The cache key is a hash of these dynamic values, combined with
           the ocr key and source language.
         - If no dynamic values are found, falls back to a simple key
           based on ocr and source language.
         """
-        base = f"{ocr_key}_{source_lang}"
+        base = f"{ocr_model}_{source_lang}"
 
         # Gather any dynamic bits we care about:
         extras = {}
 
         # Always grab credentials for this service (if any)
-        creds = settings.get_credentials(ocr_key)
+        creds = config.get("credentials")
         if creds:
             extras["credentials"] = creds
 
-        # The LLM OCR engines currently don't use the settings in the LLMs tab
-        # so exclude this for now
-
-        # # If it's an LLM, also grab the llm settings
-        # is_llm = any(identifier in ocr_key
-        #              for identifier in cls.LLM_ENGINE_IDENTIFIERS)
-        # if is_llm:
-        #     extras["llm"] = settings.get_llm_settings()
 
         if not extras:
             return base
@@ -97,7 +89,7 @@ class OCRFactory:
         return f"{base}_{digest}"
     
     @classmethod
-    def _create_new_engine(cls, settings, source_lang_english: str, ocr_model: str) -> OCREngine:
+    def _create_new_engine(cls, config:dict, source_lang_english: str, ocr_model: str) -> OCREngine:
         """Create a new OCR engine instance based on model and language."""
         
         # Model-specific factory functions
@@ -118,68 +110,75 @@ class OCRFactory:
         
         # Check if we have a specific model factory
         if ocr_model in general:
-            return general[ocr_model](settings)
+            return general[ocr_model](config)
         
         # For Default, use language-specific engines
         if ocr_model == 'Default' and source_lang_english in language_factories:
-            return language_factories[source_lang_english](settings)
+            return language_factories[source_lang_english](config)
         
         # Fallback to doctr for any other language
-        return cls._create_doctr_ocr(settings)
+        return cls._create_doctr_ocr(config)
     
     @staticmethod
-    def _create_microsoft_ocr(settings) -> OCREngine:
-        credentials = settings.get_credentials(settings.ui.tr("Microsoft Azure"))
+    def _create_microsoft_ocr(config:dict) -> OCREngine:
         engine = MicrosoftOCR()
+        credentials = config.get("credentials")
         engine.initialize(
-            api_key=credentials['api_key_ocr'],
+            api_key=credentials['api_key'],
             endpoint=credentials['endpoint']
         )
         return engine
     
     @staticmethod
-    def _create_google_ocr(settings) -> OCREngine:
-        credentials = settings.get_credentials(settings.ui.tr("Google Cloud"))
+    def _create_google_ocr(config:dict) -> OCREngine:
         engine = GoogleOCR()
+        credentials = config.get("credentials")
         engine.initialize(api_key=credentials['api_key'])
         return engine
     
     @staticmethod
-    def _create_gpt_ocr(settings, model) -> OCREngine:
-        credentials = settings.get_credentials(settings.ui.tr("Open AI GPT"))
-        api_key = credentials.get('api_key', '')
+    def _create_gpt_ocr(config:dict, model) -> OCREngine:
         engine = GPTOCR()
-        engine.initialize(api_key=api_key, model=model)
+        credentials = config.get("credentials")
+        api_key = credentials.get('api_key', '')
+        expansion_percentage = config.get('expansion_percentage', 0)
+        engine.initialize(api_key=api_key, model=model, expansion_percentage=expansion_percentage)
         return engine
     
     @staticmethod
-    def _create_manga_ocr(settings) -> OCREngine:
-        device = 'cuda' if settings.is_gpu_enabled() else 'cpu'
+    def _create_manga_ocr(config:dict) -> OCREngine:
         engine = MangaOCREngine()
-        engine.initialize(device=device)
+        device = config.get('device', 'cpu')
+        expansion_percentage = config.get('expansion_percentage', 5)
+        engine.initialize(device=device,expansion_percentage=expansion_percentage)
         return engine
     
     @staticmethod
-    def _create_pororo_ocr(settings) -> OCREngine:
+    def _create_pororo_ocr(config:dict) -> OCREngine:
         engine = PororoOCREngine()
-        engine.initialize()
+        lang = config.get('lang', 'ko')
+        engine.initialize(lang=lang)
         return engine
     
     @staticmethod
-    def _create_paddle_ocr(settings) -> OCREngine:
+    def _create_paddle_ocr(config:dict) -> OCREngine:
         engine = PaddleOCREngine()
-        engine.initialize()
+        lang = config.get('lang', 'ch')
+        engine.initialize(lang=lang)
         return engine
     
     @staticmethod
-    def _create_doctr_ocr(settings) -> OCREngine:
-        device = 'cuda' if settings.is_gpu_enabled() else 'cpu'
+    def _create_doctr_ocr(config:dict) -> OCREngine:
         engine = DocTROCR()
+        device = config.get('device', 'cpu')
         engine.initialize(device=device)
         return engine
     
     @staticmethod
-    def _create_gemini_ocr(settings, model) -> OCREngine:
+    def _create_gemini_ocr(config:dict, model) -> OCREngine:
         engine = GeminiOCR()
-        engine.initialize(settings, model)
+        credentials = config.get("credentials")
+        api_key = credentials.get('api_key', '')
+        expansion_percentage=config.get('expansion_percentage', 5)
+        engine.initialize(api_key=api_key, model=model, expansion_percentage=expansion_percentage)
         return engine

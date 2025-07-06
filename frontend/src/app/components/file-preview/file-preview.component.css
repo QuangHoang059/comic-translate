@@ -1,0 +1,222 @@
+.file-preview-container {
+  margin: 10px 0;
+}
+
+.file-preview {
+  position: relative;
+  background: white;
+  border: var(--comic-border);
+  border-radius: var(--comic-border-radius);
+  padding: 15px;
+  box-shadow: var(--comic-shadow);
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  gap: 15px;
+}
+
+.file-preview:hover {
+  transform: translate(-1px, -1px);
+  box-shadow: var(--comic-shadow-hover);
+}
+
+.file-preview.clickable {
+  cursor: pointer;
+}
+
+.file-preview.clickable:hover {
+  background: rgba(255, 210, 63, 0.1);
+}
+
+/* Image Preview */
+.image-preview {
+  position: relative;
+  flex-shrink: 0;
+  border-radius: var(--comic-border-radius);
+  overflow: hidden;
+  border: 2px solid var(--comic-accent);
+}
+
+.preview-image {
+  display: block;
+  border-radius: calc(var(--comic-border-radius) - 2px);
+  transition: transform 0.2s ease;
+}
+
+.file-preview:hover .preview-image {
+  transform: scale(1.05);
+}
+
+.image-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+  color: white;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-weight: bold;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+}
+
+.preview-label {
+  font-family: "Comic Neue", cursive;
+}
+
+/* File Icon */
+.file-icon-container {
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 5px;
+  padding: 10px;
+  background: var(--comic-bg-secondary);
+  border-radius: var(--comic-border-radius);
+  border: 2px solid var(--comic-accent);
+  min-width: 80px;
+}
+
+.file-icon {
+  font-size: 2.5rem;
+}
+
+.file-type-label {
+  font-size: 0.7rem;
+  color: var(--comic-text-secondary);
+  font-weight: bold;
+  text-align: center;
+}
+
+/* File Details */
+.file-details {
+  flex: 1;
+  min-width: 0; /* Allow text truncation */
+}
+
+.file-name {
+  font-family: "Comic Neue", cursive;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--comic-text-primary);
+  margin-bottom: 5px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.file-meta {
+  display: flex;
+  gap: 15px;
+  margin-bottom: 8px;
+  flex-wrap: wrap;
+}
+
+.file-size {
+  font-size: 0.9rem;
+  color: var(--comic-text-secondary);
+  background: var(--comic-bg-secondary);
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--comic-accent);
+}
+
+.file-size.warning {
+  background: rgba(255, 0, 110, 0.1);
+  color: var(--comic-danger);
+  border-color: var(--comic-danger);
+}
+
+.file-type {
+  font-size: 0.9rem;
+  color: var(--comic-text-secondary);
+  background: var(--comic-info);
+  color: white;
+  padding: 2px 8px;
+  border-radius: 10px;
+  border: 1px solid var(--comic-info);
+}
+
+.size-warning {
+  font-size: 0.8rem;
+  color: var(--comic-danger);
+  background: rgba(255, 0, 110, 0.1);
+  padding: 5px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--comic-danger);
+  margin: 5px 0;
+}
+
+.validation-status {
+  margin-top: 5px;
+}
+
+.status-valid {
+  font-size: 0.8rem;
+  color: var(--comic-success);
+  font-weight: 600;
+}
+
+.status-invalid {
+  font-size: 0.8rem;
+  color: var(--comic-danger);
+  font-weight: 600;
+}
+
+/* Remove Button */
+.remove-btn {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: var(--comic-danger);
+  border: 2px solid #000;
+  border-radius: 50%;
+  width: 30px;
+  height: 30px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  font-size: 0.8rem;
+  transition: all 0.2s ease;
+  box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.3);
+}
+
+.remove-btn:hover {
+  transform: scale(1.1);
+  background: #ff0040;
+  box-shadow: 3px 3px 6px rgba(0, 0, 0, 0.4);
+}
+
+.remove-btn:active {
+  transform: scale(0.95);
+  box-shadow: 1px 1px 2px rgba(0, 0, 0, 0.3);
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .file-preview {
+    flex-direction: column;
+    text-align: center;
+    padding: 20px 15px;
+  }
+  
+  .image-preview,
+  .file-icon-container {
+    align-self: center;
+  }
+  
+  .file-details {
+    width: 100%;
+  }
+  
+  .file-meta {
+    justify-content: center;
+  }
+  
+  .remove-btn {
+    top: 5px;
+    right: 5px;
+  }
+}

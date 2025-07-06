@@ -1,0 +1,70 @@
+<div class="progress-container">
+  <!-- Overall Progress Bar -->
+  <div class="overall-progress">
+    <div class="progress-header">
+      <h3 class="progress-title">🎯 Translation Progress</h3>
+      <div class="progress-info">
+        <span class="progress-percentage">{{ getProgressPercentage() | number:'1.0-0' }}%</span>
+        <span class="estimated-time">⏱️ {{ getEstimatedTimeRemaining() }} remaining</span>
+      </div>
+    </div>
+    
+    <div class="progress-bar-container">
+      <div class="progress-bar">
+        <div 
+          class="progress-fill" 
+          [style.width.%]="getProgressPercentage()"
+        ></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Step-by-Step Progress -->
+  <div class="steps-container">
+    <div 
+      *ngFor="let step of steps; let i = index" 
+      [ngClass]="getStepClass(step)"
+    >
+      <div class="step-indicator">
+        <div class="step-number">{{ i + 1 }}</div>
+        <div class="step-icon">{{ step.icon }}</div>
+      </div>
+      
+      <div class="step-content">
+        <div class="step-label">{{ step.label }}</div>
+        <div class="step-status">
+          <span *ngIf="step.completed" class="status-completed">
+            ✅ Completed
+          </span>
+          <span *ngIf="step.error" class="status-error">
+            ❌ Error
+          </span>
+          <span *ngIf="step.key === currentStep && isProcessing" class="status-processing">
+            <div class="comic-loading small"></div>
+            Processing...
+          </span>
+          <span *ngIf="!step.completed && !step.error && step.key !== currentStep" class="status-pending">
+            ⏳ Waiting
+          </span>
+        </div>
+      </div>
+      
+      <div *ngIf="i < steps.length - 1" class="step-connector" [class.active]="step.completed"></div>
+    </div>
+  </div>
+
+  <!-- Error Display -->
+  <div *ngIf="error" class="error-display comic-card">
+    <div class="error-icon">❌</div>
+    <div class="error-content">
+      <h4>Something went wrong!</h4>
+      <p>{{ error }}</p>
+    </div>
+  </div>
+
+  <!-- Fun Facts During Processing -->
+  <div *ngIf="isProcessing && !error" class="fun-facts comic-bubble">
+    <h4>💡 Did you know?</h4>
+    <p>{{ getRandomFunFact() }}</p>
+  </div>
+</div>

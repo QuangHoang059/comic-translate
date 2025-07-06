@@ -1,0 +1,331 @@
+.progress-container {
+  margin: 20px 0;
+}
+
+/* Overall Progress */
+.overall-progress {
+  background: white;
+  border: var(--comic-border);
+  border-radius: var(--comic-border-radius);
+  padding: 20px;
+  margin-bottom: 20px;
+  box-shadow: var(--comic-shadow);
+}
+
+.progress-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 15px;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.progress-title {
+  font-family: "Bangers", cursive;
+  font-size: 1.5rem;
+  color: var(--comic-primary);
+  text-shadow: 2px 2px 0px #000000;
+  margin: 0;
+}
+
+.progress-info {
+  display: flex;
+  gap: 15px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.progress-percentage {
+  font-family: "Bangers", cursive;
+  font-size: 1.8rem;
+  color: var(--comic-success);
+  text-shadow: 1px 1px 0px #000000;
+}
+
+.estimated-time {
+  font-size: 0.9rem;
+  color: var(--comic-text-secondary);
+  background: var(--comic-bg-secondary);
+  padding: 5px 10px;
+  border-radius: 15px;
+  border: 2px solid var(--comic-accent);
+}
+
+.progress-bar-container {
+  position: relative;
+}
+
+.progress-bar {
+  width: 100%;
+  height: 20px;
+  background: var(--comic-bg-secondary);
+  border: var(--comic-border);
+  border-radius: 15px;
+  overflow: hidden;
+  position: relative;
+}
+
+.progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, var(--comic-success), var(--comic-accent));
+  border-radius: 12px;
+  transition: width 0.5s ease;
+  position: relative;
+}
+
+.progress-fill::after {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 5px,
+    rgba(255, 255, 255, 0.3) 5px,
+    rgba(255, 255, 255, 0.3) 10px
+  );
+  animation: progress-stripes 1s linear infinite;
+}
+
+@keyframes progress-stripes {
+  0% { background-position: 0 0; }
+  100% { background-position: 20px 0; }
+}
+
+/* Steps Container */
+.steps-container {
+  background: white;
+  border: var(--comic-border);
+  border-radius: var(--comic-border-radius);
+  padding: 20px;
+  box-shadow: var(--comic-shadow);
+}
+
+.progress-step {
+  display: flex;
+  align-items: center;
+  position: relative;
+  padding: 15px 0;
+  transition: all 0.3s ease;
+}
+
+.progress-step:hover {
+  background: rgba(255, 210, 63, 0.1);
+  border-radius: var(--comic-border-radius);
+  margin: 0 -10px;
+  padding: 15px 10px;
+}
+
+.step-indicator {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 60px;
+  height: 60px;
+  border: var(--comic-border);
+  border-radius: 50%;
+  background: white;
+  position: relative;
+  z-index: 2;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.step-number {
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  width: 20px;
+  height: 20px;
+  background: var(--comic-primary);
+  color: white;
+  border: 2px solid #000;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.8rem;
+  font-weight: bold;
+}
+
+.step-icon {
+  font-size: 1.8rem;
+}
+
+.step-content {
+  flex: 1;
+}
+
+.step-label {
+  font-family: "Comic Neue", cursive;
+  font-weight: 700;
+  font-size: 1.1rem;
+  color: var(--comic-text-primary);
+  margin-bottom: 5px;
+}
+
+.step-status {
+  font-size: 0.9rem;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-completed {
+  color: var(--comic-success);
+  font-weight: 600;
+}
+
+.status-error {
+  color: var(--comic-danger);
+  font-weight: 600;
+}
+
+.status-processing {
+  color: var(--comic-primary);
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.status-pending {
+  color: var(--comic-text-secondary);
+}
+
+/* Step States */
+.progress-step.completed .step-indicator {
+  background: var(--comic-success);
+  border-color: var(--comic-success);
+  box-shadow: 0 0 10px rgba(6, 255, 165, 0.5);
+}
+
+.progress-step.completed .step-icon {
+  filter: brightness(0) invert(1);
+}
+
+.progress-step.active .step-indicator {
+  background: var(--comic-primary);
+  border-color: var(--comic-primary);
+  animation: pulse 2s infinite;
+}
+
+.progress-step.active .step-icon {
+  filter: brightness(0) invert(1);
+}
+
+.progress-step.error .step-indicator {
+  background: var(--comic-danger);
+  border-color: var(--comic-danger);
+  box-shadow: 0 0 10px rgba(255, 0, 110, 0.5);
+}
+
+.progress-step.error .step-icon {
+  filter: brightness(0) invert(1);
+}
+
+.progress-step.pending .step-indicator {
+  background: #f0f0f0;
+  border-color: #ccc;
+}
+
+@keyframes pulse {
+  0% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0.7); }
+  70% { box-shadow: 0 0 0 10px rgba(255, 107, 53, 0); }
+  100% { box-shadow: 0 0 0 0 rgba(255, 107, 53, 0); }
+}
+
+/* Step Connector */
+.step-connector {
+  position: absolute;
+  left: 30px;
+  top: 75px;
+  width: 4px;
+  height: 30px;
+  background: #ddd;
+  z-index: 1;
+}
+
+.step-connector.active {
+  background: var(--comic-success);
+}
+
+/* Loading Animation */
+.comic-loading.small {
+  width: 16px;
+  height: 16px;
+  border-width: 2px;
+}
+
+/* Error Display */
+.error-display {
+  background: rgba(255, 0, 110, 0.1);
+  border-color: var(--comic-danger);
+  display: flex;
+  align-items: center;
+  gap: 15px;
+  margin: 20px 0;
+}
+
+.error-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.error-content h4 {
+  color: var(--comic-danger);
+  margin: 0 0 5px 0;
+}
+
+.error-content p {
+  margin: 0;
+  color: var(--comic-text-primary);
+}
+
+/* Fun Facts */
+.fun-facts {
+  background: linear-gradient(135deg, var(--comic-accent), var(--comic-secondary));
+  margin: 20px 0;
+}
+
+.fun-facts h4 {
+  margin: 0 0 10px 0;
+  color: var(--comic-text-primary);
+}
+
+.fun-facts p {
+  margin: 0;
+  font-style: italic;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+  .progress-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .progress-info {
+    width: 100%;
+    justify-content: space-between;
+  }
+  
+  .step-indicator {
+    width: 50px;
+    height: 50px;
+    margin-right: 15px;
+  }
+  
+  .step-icon {
+    font-size: 1.5rem;
+  }
+  
+  .step-connector {
+    left: 25px;
+    height: 25px;
+  }
+}

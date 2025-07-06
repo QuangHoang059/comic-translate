@@ -1,0 +1,80 @@
+<div class="comic-card upload-container">
+  <h2 class="comic-subtitle">📚 Upload Your Comic!</h2>
+
+  <!-- File Upload Area -->
+  <div
+    class="upload-area"
+    [class.drag-over]="dragOver"
+    [class.has-file]="selectedFile"
+    (dragover)="onDragOver($event)"
+    (dragleave)="onDragLeave($event)"
+    (drop)="onDrop($event)"
+    (click)="fileInput.click()"
+  >
+    <input
+      #fileInput
+      type="file"
+      accept="image/*"
+      (change)="onFileSelected($event)"
+      style="display: none"
+    />
+
+    <div *ngIf="!selectedFile" class="upload-placeholder">
+      <div class="upload-icon">📸</div>
+      <p class="upload-text">
+        <strong>Click to upload</strong> or drag and drop your comic image here
+      </p>
+      <p class="upload-hint">Supports: JPEG, PNG, WebP (Max 10MB)</p>
+    </div>
+
+    <div *ngIf="selectedFile" class="file-preview">
+      <app-file-preview
+        [file]="selectedFile"
+        [showDetails]="true"
+        [allowRemove]="true"
+        (fileRemoved)="onFileRemoved()"
+      ></app-file-preview>
+    </div>
+  </div>
+
+  <!-- Language Selection -->
+  <app-language-selector
+    [sourceLanguage]="sourceLanguage"
+    [targetLanguage]="targetLanguage"
+    [supportedLanguages]="supportedLanguages"
+    [disabled]="isUploading"
+    (languagesSelected)="onLanguagesSelected($event)"
+  ></app-language-selector>
+
+  <!-- Upload Button -->
+  <div class="upload-actions">
+    <button
+      class="comic-btn comic-btn-success upload-btn"
+      [disabled]="!selectedFile || isUploading"
+      (click)="uploadImage()"
+    >
+      <span *ngIf="!isUploading">🚀 Start Translation!</span>
+      <span *ngIf="isUploading" class="loading-content">
+        <div class="comic-loading"></div>
+        Uploading...
+      </span>
+    </button>
+  </div>
+
+  <!-- Advanced Settings -->
+  <app-settings
+    [settings]="settings"
+    (settingsChange)="onSettingsChange($event)"
+  ></app-settings>
+
+  <!-- Tips -->
+  <div class="comic-bubble tips-bubble">
+    <h4>💡 Pro Tips:</h4>
+    <ul>
+      <li>Use high-quality images for better text detection</li>
+      <li>Make sure text is clearly visible and not too small</li>
+      <li>Avoid images with too much background noise</li>
+      <li>Single page works better than multiple pages</li>
+    </ul>
+  </div>
+</div>

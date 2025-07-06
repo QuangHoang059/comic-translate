@@ -1,0 +1,134 @@
+<div class="settings-container comic-card">
+  <div class="settings-header" (click)="toggleExpanded()">
+    <h3 class="comic-subtitle">
+      <span class="settings-icon">⚙️</span>
+      Advanced Settings
+    </h3>
+    <button type="button" class="expand-btn">
+      <span class="expand-icon" [class.expanded]="isExpanded">{{ isExpanded ? '▼' : '▶' }}</span>
+    </button>
+  </div>
+
+  <div class="settings-content" [class.expanded]="isExpanded">
+    <!-- GPU Usage -->
+    <div class="setting-item">
+      <div class="setting-header">
+        <label class="setting-label">
+          <span class="setting-icon">🚀</span>
+          Use GPU Acceleration
+        </label>
+        <div class="toggle-switch">
+          <input 
+            type="checkbox" 
+            id="useGpu" 
+            [(ngModel)]="settings.useGpu"
+            (change)="onSettingChange()"
+          >
+          <label for="useGpu" class="toggle-label"></label>
+        </div>
+      </div>
+      <p class="setting-description">
+        Enable GPU acceleration for faster processing (requires compatible hardware)
+      </p>
+    </div>
+
+    <!-- Extra Context -->
+    <div class="setting-item">
+      <label class="setting-label">
+        <span class="setting-icon">💭</span>
+        Extra Context
+      </label>
+      <textarea 
+        class="comic-input context-input"
+        [(ngModel)]="settings.extraContext"
+        (input)="onSettingChange()"
+        placeholder="Provide additional context to help with translation accuracy..."
+        rows="3"
+      ></textarea>
+      <p class="setting-description">
+        Add context about the comic genre, characters, or specific terms to improve translation quality
+      </p>
+    </div>
+
+    <!-- Preserve Formatting -->
+    <div class="setting-item">
+      <div class="setting-header">
+        <label class="setting-label">
+          <span class="setting-icon">📐</span>
+          Preserve Text Formatting
+        </label>
+        <div class="toggle-switch">
+          <input 
+            type="checkbox" 
+            id="preserveFormatting" 
+            [(ngModel)]="settings.preserveFormatting"
+            (change)="onSettingChange()"
+          >
+          <label for="preserveFormatting" class="toggle-label"></label>
+        </div>
+      </div>
+      <p class="setting-description">
+        Maintain original text size, font style, and positioning when possible
+      </p>
+    </div>
+
+    <!-- Detect Vertical Text -->
+    <div class="setting-item">
+      <div class="setting-header">
+        <label class="setting-label">
+          <span class="setting-icon">📝</span>
+          Detect Vertical Text
+        </label>
+        <div class="toggle-switch">
+          <input 
+            type="checkbox" 
+            id="detectVerticalText" 
+            [(ngModel)]="settings.detectVerticalText"
+            (change)="onSettingChange()"
+          >
+          <label for="detectVerticalText" class="toggle-label"></label>
+        </div>
+      </div>
+      <p class="setting-description">
+        Enable detection of vertically written text (common in Japanese/Chinese comics)
+      </p>
+    </div>
+
+    <!-- Confidence Threshold -->
+    <div class="setting-item">
+      <label class="setting-label">
+        <span class="setting-icon">🎯</span>
+        Detection Confidence: {{ getConfidenceLabel(settings.confidenceThreshold) }}
+      </label>
+      <div class="slider-container">
+        <input 
+          type="range" 
+          class="confidence-slider"
+          min="0.1" 
+          max="1" 
+          step="0.1"
+          [(ngModel)]="settings.confidenceThreshold"
+          (input)="onSettingChange()"
+        >
+        <div class="slider-labels">
+          <span>Low</span>
+          <span>High</span>
+        </div>
+      </div>
+      <p class="setting-description">
+        Adjust how confident the AI should be before detecting text blocks
+      </p>
+    </div>
+
+    <!-- Reset Button -->
+    <div class="settings-actions">
+      <button 
+        type="button" 
+        class="comic-btn comic-btn-secondary reset-btn"
+        (click)="resetToDefaults()"
+      >
+        🔄 Reset to Defaults
+      </button>
+    </div>
+  </div>
+</div>

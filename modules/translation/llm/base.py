@@ -11,7 +11,7 @@ from ...utils.translator_utils import get_raw_text, set_texts_from_json
 
 class BaseLLMTranslation(LLMTranslation):
     """Base class for LLM-based translation engines with shared functionality."""
-    
+
     def __init__(self):
         self.source_lang = None
         self.target_lang = None
@@ -22,34 +22,37 @@ class BaseLLMTranslation(LLMTranslation):
         self.temperature = None
         self.top_p = None
         self.max_tokens = None
-    
-    def initialize(self, settings: Any, source_lang: str, target_lang: str, **kwargs) -> None:
+
+    def initialize(
+        self, config: dict, source_lang: str, target_lang: str, **kwargs
+    ) -> None:
         """
         Initialize the LLM translation engine.
-        
+
         Args:
-            settings: Settings object with credentials
+            config: config object with credentials
             source_lang: Source language name
             target_lang: Target language name
             **kwargs: Engine-specific initialization parameters
         """
-        llm_settings = settings.get_llm_settings()
         self.source_lang = source_lang
         self.target_lang = target_lang
-        self.img_as_llm_input = llm_settings.get('image_input_enabled', True)
-        self.temperature = llm_settings.get('temperature', 1)
-        self.top_p = llm_settings.get('top_p', 0.95)
-        self.max_tokens = llm_settings.get('max_tokens', 5000)
-        
-    def translate(self, blk_list: list[TextBlock], image: np.ndarray, extra_context: str) -> list[TextBlock]:
+        self.img_as_llm_input = config.get("image_input_enabled", True)
+        self.temperature = config.get("temperature", 1)
+        self.top_p = config.get("top_p", 0.95)
+        self.max_tokens = config.get("max_tokens", 5000)
+
+    def translate(
+        self, blk_list: list[TextBlock], image: np.ndarray, extra_context: str
+    ) -> list[TextBlock]:
         """
         Translate text blocks using LLM.
-        
+
         Args:
             blk_list: List of TextBlock objects to translate
             image: Image as numpy array
             extra_context: Additional context information for translation
-            
+
         Returns:
             List of updated TextBlock objects with translations
         """
@@ -57,25 +60,29 @@ class BaseLLMTranslation(LLMTranslation):
             entire_raw_text = get_raw_text(blk_list)
             system_prompt = self.get_system_prompt(self.source_lang, self.target_lang)
             user_prompt = f"{extra_context}\nMake the translation sound as natural as possible.\nTranslate this:\n{entire_raw_text}"
-            
-            entire_translated_text = self._perform_translation(user_prompt, system_prompt, image)
+
+            entire_translated_text = self._perform_translation(
+                user_prompt, system_prompt, image
+            )
             set_texts_from_json(blk_list, entire_translated_text)
-        
+
         except Exception as e:
             print(f"{type(self).__name__} translation error: {str(e)}")
-            
+
         return blk_list
-    
+
     @abstractmethod
-    def _perform_translation(self, user_prompt: str, system_prompt: str, image: np.ndarray) -> str:
+    def _perform_translation(
+        self, user_prompt: str, system_prompt: str, image: np.ndarray
+    ) -> str:
         """
         Perform translation using specific LLM.
-        
+
         Args:
             user_prompt: User prompt for LLM
             system_prompt: System prompt for LLM
             image: Image as numpy array
-            
+
         Returns:
             Translated JSON text
         """
@@ -84,11 +91,11 @@ class BaseLLMTranslation(LLMTranslation):
     def encode_image(self, image: np.ndarray, ext=".jpg"):
         """
         Encode CV2/numpy image directly to base64 string using cv2.imencode.
-        
+
         Args:
             image: Numpy array representing the image
             ext: Extension/format to encode the image as (".png" by default for higher quality)
-                
+
         Returns:
             Tuple of (Base64 encoded string, mime_type)
         """
@@ -96,17 +103,17 @@ class BaseLLMTranslation(LLMTranslation):
         success, buffer = cv2.imencode(ext, image)
         if not success:
             raise ValueError(f"Failed to encode image with format {ext}")
-        
+
         # Convert to base64
-        img_str = base64.b64encode(buffer).decode('utf-8')
-        
+        img_str = base64.b64encode(buffer).decode("utf-8")
+
         # Map extension to mime type
         mime_types = {
-            ".jpg": "image/jpeg", 
+            ".jpg": "image/jpeg",
             ".jpeg": "image/jpeg",
             ".png": "image/png",
-            ".webp": "image/webp"
+            ".webp": "image/webp",
         }
         mime_type = mime_types.get(ext.lower(), f"image/{ext[1:].lower()}")
-        
+
         return img_str, mime_type

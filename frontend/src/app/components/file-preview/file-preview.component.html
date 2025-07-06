@@ -1,0 +1,64 @@
+<div class="file-preview-container" *ngIf="file">
+  <div class="file-preview" [class.clickable]="fileClicked.observed" (click)="onFileClick()">
+    
+    <!-- Image Preview -->
+    <div *ngIf="isImageFile && previewUrl" class="image-preview">
+      <img 
+        [src]="previewUrl" 
+        [alt]="file.name"
+        [style.max-width.px]="maxPreviewSize"
+        [style.max-height.px]="maxPreviewSize"
+        class="preview-image"
+      >
+      <div class="image-overlay">
+        <span class="preview-label">Preview</span>
+      </div>
+    </div>
+
+    <!-- File Icon (for non-images or fallback) -->
+    <div *ngIf="!isImageFile || !previewUrl" class="file-icon-container">
+      <div class="file-icon">{{ getFileIcon() }}</div>
+      <div class="file-type-label">{{ fileType }}</div>
+    </div>
+
+    <!-- File Details -->
+    <div *ngIf="showDetails" class="file-details">
+      <div class="file-name" [title]="file.name">
+        {{ file.name }}
+      </div>
+      
+      <div class="file-meta">
+        <span class="file-size" [class.warning]="!isFileSizeValid()">
+          {{ fileSize }}
+        </span>
+        <span class="file-type">{{ fileType }}</span>
+      </div>
+
+      <!-- File Size Warning -->
+      <div *ngIf="!isFileSizeValid()" class="size-warning">
+        ⚠️ {{ getFileSizeWarning() }}
+      </div>
+
+      <!-- File Validation Status -->
+      <div class="validation-status">
+        <span *ngIf="isFileSizeValid()" class="status-valid">
+          ✅ Valid file
+        </span>
+        <span *ngIf="!isFileSizeValid()" class="status-invalid">
+          ❌ Invalid file
+        </span>
+      </div>
+    </div>
+
+    <!-- Remove Button -->
+    <button 
+      *ngIf="allowRemove"
+      type="button" 
+      class="remove-btn"
+      (click)="onRemoveFile(); $event.stopPropagation()"
+      title="Remove file"
+    >
+      ❌
+    </button>
+  </div>
+</div>

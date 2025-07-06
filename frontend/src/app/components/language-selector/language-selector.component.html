@@ -1,0 +1,55 @@
+<div class="language-selector">
+  <div class="language-group">
+    <label class="comic-label">
+      <span class="label-icon">🌍</span>
+      Source Language (Original)
+    </label>
+    <div class="language-input-wrapper">
+      <span class="language-flag">{{ getLanguageFlag(sourceLanguage) }}</span>
+      <select
+        class="comic-select language-select"
+        [value]="sourceLanguage"
+        [disabled]="disabled"
+        (change)="onSourceLanguageChange($event)"
+      >
+        <option value="" disabled>Select source language</option>
+        <option *ngFor="let lang of supportedLanguages" [value]="lang">
+          {{ lang }}
+        </option>
+      </select>
+    </div>
+  </div>
+
+  <div class="swap-container">
+    <button
+      type="button"
+      class="swap-btn"
+      [disabled]="disabled || !sourceLanguage || !targetLanguage"
+      (click)="swapLanguages()"
+      title="Swap languages"
+    >
+      <span class="swap-icon">🔄</span>
+    </button>
+  </div>
+
+  <div class="language-group">
+    <label class="comic-label">
+      <span class="label-icon">🎯</span>
+      Target Language (Translate to)
+    </label>
+    <div class="language-input-wrapper">
+      <span class="language-flag">{{ getLanguageFlag(targetLanguage) }}</span>
+      <select
+        class="comic-select language-select"
+        [value]="targetLanguage"
+        [disabled]="disabled"
+        (change)="onTargetLanguageChange($event)"
+      >
+        <option value="" disabled>Select target language</option>
+        <option *ngFor="let lang of supportedLanguages" [value]="lang">
+          {{ lang }}
+        </option>
+      </select>
+    </div>
+  </div>
+</div>
