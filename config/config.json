@@ -1,0 +1,84 @@
+{
+  "app": {
+    "name": "Comic Translate",
+    "version": "1.0.0",
+    "debug": false
+  },
+  "detection": {
+    "model": "RT-DETR-V2",
+    "device": "cpu",
+    "confidence_threshold": 0.3,
+    "expansion_percentage": 5
+  },
+  "ocr": {
+    "model": "Default",
+    "device": "cpu",
+    "expansion_percentage": 5,
+    "languages": {
+      "Japanese": "Japanese",
+      "Korean": "Korean", 
+      "Chinese": "Chinese",
+      "Russian": "Russian",
+      "English": "English",
+      "French": "French",
+      "German": "German",
+      "Dutch": "Dutch",
+      "Spanish": "Spanish",
+      "Italian": "Italian"
+    }
+  },
+  "translation": {
+    "model": "GPT-4o",
+    "device": "cpu",
+    "temperature": 1.0,
+    "top_p": 0.95,
+    "max_tokens": 5000,
+    "image_input_enabled": true,
+    "extra_context": "",
+    "uppercase": false
+  },
+  "inpainting": {
+    "model": "lama",
+    "device": "cpu"
+  },
+  "rendering": {
+    "font_size": 12,
+    "font_color": "#000000",
+    "background_color": "#FFFFFF",
+    "line_spacing": 1.2
+  },
+  "credentials": {
+    "openai": {
+      "api_key": ""
+    },
+    "google": {
+      "api_key": ""
+    },
+    "microsoft": {
+      "api_key": "",
+      "endpoint": "",
+      "api_key_translator": "",
+      "region_translator": ""
+    },
+    "deepl": {
+      "api_key": ""
+    },
+    "yandex": {
+      "api_key": ""
+    },
+    "claude": {
+      "api_key": ""
+    },
+    "gemini": {
+      "api_key": ""
+    },
+    "deepseek": {
+      "api_key": ""
+    }
+  },
+  "storage": {
+    "upload_dir": "uploads",
+    "results_dir": "results",
+    "models_dir": "models"
+  }
+}
