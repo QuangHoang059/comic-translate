@@ -4,6 +4,7 @@ import os
 import json
 
 # Import các modules
+from controller.api_pipeline_controller import APIPipelineController
 from modules.detection.processor import TextBlockDetectorProcessor
 from modules.ocr.processor import OCRProcessor
 from modules.translation.processor import Translator
@@ -88,18 +89,7 @@ class AppContainer(containers.DeclarativeContainer):
                 }
             )
 
-    # Storage providers
-    upload_dir = providers.Singleton(
-        lambda config: config.storage.upload_dir(), config=config
-    )
-
-    results_dir = providers.Singleton(
-        lambda config: config.storage.results_dir(), config=config
-    )
-
-    models_dir = providers.Singleton(
-        lambda config: config.storage.models_dir(), config=config
-    )
+    storage_config = providers.Resource(config.storage)
 
     # Detection module
     detection_processor = providers.Singleton(
@@ -162,20 +152,9 @@ class AppContainer(containers.DeclarativeContainer):
         ),
     )
 
-    # Pipeline controller
-    pipeline_controller = providers.Singleton(
-        "controller.translate_controler.ComicTranslateControler",
-        main_page=None,  # Sẽ được inject khi cần
-        detection_processor=detection_processor,
-        ocr_processor=ocr_processor,
-        translator=translator,
-        inpainter=inpainter,
-        text_renderer=text_renderer,
-    )
-
     # API pipeline (headless version)
     api_pipeline = providers.Singleton(
-        "controller.api_pipeline_controller.APIPipelineController",
+        APIPipelineController,
         detection_processor=detection_processor,
         ocr_processor=ocr_processor,
         translator=translator,
@@ -217,13 +196,6 @@ def get_inpainter(inpainter=Provide[AppContainer.inpainter]):
 @inject
 def get_text_renderer(text_renderer=Provide[AppContainer.text_renderer]):
     return text_renderer
-
-
-@inject
-def get_pipeline_controller(
-    pipeline_controller=Provide[AppContainer.pipeline_controller],
-):
-    return pipeline_controller
 
 
 @inject

@@ -1,50 +1,37 @@
 import os
 import cv2
 import numpy as np
-from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks
+from fastapi import APIRouter, UploadFile, File, Form, BackgroundTasks, Depends
 from fastapi.responses import JSONResponse, FileResponse
-from pydantic import BaseModel
-from typing import Optional, List, Dict, Any
 import uuid
 import shutil
 from datetime import datetime
 from dependency_injector.wiring import inject, Provide
-
-from modules.detection.processor import TextBlockDetectorProcessor
-from modules.translation.processor import Translator
 from controller.api_pipeline_controller import APIPipelineController
-from modules.utils.textblock import TextBlock
-from modules.utils.pipeline_utils import generate_mask, get_language_code, inpaint_map
 from data_model.request import ProcessResponse, TranslationRequest, TextBlockData
 from container.app_container import AppContainer
 
 
 router = APIRouter(prefix="/api/v1", tags=["translation"])
 
-UPLOAD_DIR = "uploads"
-RESULTS_DIR = "results"
-os.makedirs(UPLOAD_DIR, exist_ok=True)
-os.makedirs(RESULTS_DIR, exist_ok=True)
 
 image_store = {}
 
-# Initialize container
-container = AppContainer()
-AppContainer.load_config()
-
 
 @router.post("/upload", response_model=ProcessResponse)
+@inject
 async def upload_image(
     file: UploadFile = File(...),
     source_language: str = Form(...),
     target_language: str = Form(...),
+    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     # Generate unique ID for this image
     image_id = str(uuid.uuid4())
 
     # Save uploaded file
     ext = os.path.splitext(file.filename or "")[1]
-    file_path = os.path.join(UPLOAD_DIR, f"{image_id}{ext}")
+    file_path = os.path.join(storage_config["results_dir"], f"{image_id}{ext}")
     with open(file_path, "wb") as f:
         shutil.copyfileobj(file.file, f)
 
@@ -62,7 +49,8 @@ async def upload_image(
 @router.post("/detect-blocks/{image_id}", response_model=ProcessResponse)
 @inject
 async def detect_blocks(
-    image_id: str, pipeline: APIPipelineController = Provide[AppContainer.api_pipeline]
+    image_id: str,
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
 ):
     if image_id not in image_store:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -97,7 +85,8 @@ async def detect_blocks(
 @router.post("/ocr/{image_id}", response_model=ProcessResponse)
 @inject
 async def ocr_image(
-    image_id: str, pipeline: APIPipelineController = Provide[AppContainer.api_pipeline]
+    image_id: str,
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
 ):
     if image_id not in image_store:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -136,7 +125,7 @@ async def ocr_image(
 async def translate_image(
     image_id: str,
     request: TranslationRequest,
-    pipeline: APIPipelineController = Provide[AppContainer.api_pipeline],
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
 ):
     if image_id not in image_store:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -185,7 +174,8 @@ async def inpaint_image(
     image_id: str,
     background_tasks: BackgroundTasks,
     request: TranslationRequest,
-    pipeline: APIPipelineController = Provide[AppContainer.api_pipeline],
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
+    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     if image_id not in image_store:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -204,7 +194,9 @@ async def inpaint_image(
     inpainted_image = pipeline.inpaint_image(image, blk_list, request.use_gpu)
 
     # Save inpainted image
-    result_path = os.path.join(RESULTS_DIR, f"{image_id}_inpainted.jpg")
+    result_path = os.path.join(
+        storage_config["results_dir"], f"{image_id}_inpainted.jpg"
+    )
     cv2.imwrite(result_path, inpainted_image)
 
     # Update image store
@@ -217,7 +209,9 @@ async def inpaint_image(
 @router.post("/render/{image_id}")
 @inject
 async def render_translated_image(
-    image_id: str, pipeline: APIPipelineController = Provide[AppContainer.api_pipeline]
+    image_id: str,
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
+    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     if image_id not in image_store:
         return JSONResponse(status_code=404, content={"error": "Image not found"})
@@ -239,7 +233,9 @@ async def render_translated_image(
 
     # Save rendered image
     timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-    result_path = os.path.join(RESULTS_DIR, f"{image_id}_translated_{timestamp}.jpg")
+    result_path = os.path.join(
+        storage_config["results_dir"], f"{image_id}_translated_{timestamp}.jpg"
+    )
     cv2.imwrite(result_path, final_image)
 
     # Update image store
@@ -273,7 +269,7 @@ async def translate_all_steps(
     image_id: str,
     request: TranslationRequest,
     background_tasks: BackgroundTasks,
-    pipeline: APIPipelineController = Provide[AppContainer.api_pipeline],
+    pipeline: APIPipelineController = Depends(Provide[AppContainer.api_pipeline]),
 ):
     """Process all steps at once: detect blocks, OCR, translate, inpaint, and render"""
     if image_id not in image_store:
@@ -300,6 +296,7 @@ async def process_all_steps(
     source_lang: str,
     target_lang: str,
     pipeline: APIPipelineController,
+    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     """Implementation of the full pipeline"""
     try:
@@ -314,7 +311,9 @@ async def process_all_steps(
 
         # Save final image
         timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
-        result_path = os.path.join(RESULTS_DIR, f"{image_id}_final_{timestamp}.jpg")
+        result_path = os.path.join(
+            storage_config["results_dir"], f"{image_id}_final_{timestamp}.jpg"
+        )
         cv2.imwrite(result_path, result["final_image"])
 
         # Update image store

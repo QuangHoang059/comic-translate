@@ -20,7 +20,7 @@ def main():
 
     # Initialize container and load config
     container = AppContainer()
-    AppContainer.load_config()
+    container.load_config()
 
     # Create FastAPI app
     app = create_app()

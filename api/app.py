@@ -1,11 +1,11 @@
 import sys
 import os
-import uvicorn
+from dependency_injector.wiring import Provide, inject
+
+from container.app_container import AppContainer
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
-import cv2
-import numpy as np
-from fastapi import FastAPI
+from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 from api.router.api import router
 
@@ -40,3 +40,11 @@ def create_app() -> FastAPI:
         return {"status": "healthy"}
 
     return app
+
+
+@inject
+def InitializeStorage(
+    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
+):
+    os.makedirs(storage_config["upload_dir"], exist_ok=True)
+    os.makedirs(storage_config["results_dir"], exist_ok=True)
