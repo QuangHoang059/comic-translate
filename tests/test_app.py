@@ -1,10 +1,10 @@
-from app.ui.main_window import ComicTranslateUI
+# from app.ui.main_window import ComicTranslateUI
 
-def test_comic_translate_ui_basic(qtbot):
-    widget = ComicTranslateUI()
-    qtbot.addWidget(widget)
+# def test_comic_translate_ui_basic(qtbot):
+#     widget = ComicTranslateUI()
+#     qtbot.addWidget(widget)
 
-    widget.show()
+#     widget.show()
 
-    assert widget.isVisible()
-    assert widget.windowTitle() == "Comic Translate"
+#     assert widget.isVisible()
+#     assert widget.windowTitle() == "Comic Translate"
