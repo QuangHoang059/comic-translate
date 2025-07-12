@@ -14,16 +14,13 @@ class TextBlockDetectorProcessor:
         self.engine = None
         self.model = "RT-DETR-V2"  # Default model
 
-    def initialize(self, model: str = None) -> None:
-        if model:
-            self.model = model
+    def initialize(self, config: dict = {}) -> None:
+        if config:
+            self.config = config
 
-        if self.config:
-            if not model:
-                self.model = self.config.get("model") or self.model
-
-            # Create appropriate engine
-            self.engine = DetectionEngineFactory.create_engine(self.config, self.model)
+        self.model = self.config.get("model") or self.model
+        # Create appropriate engine
+        self.engine = DetectionEngineFactory.create_engine(self.config, self.model)
 
     def detect(self, img: np.ndarray) -> list[TextBlock]:
         if self.engine is None:

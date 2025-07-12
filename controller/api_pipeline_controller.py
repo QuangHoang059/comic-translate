@@ -3,10 +3,15 @@ import numpy as np
 from typing import List, Optional
 from dependency_injector.wiring import inject, Provide
 
+from modules.inpainting.processor import InPaintingProcessor
+from modules.rendering.render_api import TextRenderer
+from modules.detection.processor import TextBlockDetectorProcessor
+from modules.inpainting.factory import InPaintModelFactory
+from modules.ocr.processor import OCRProcessor
+from modules.translation.processor import Translator
 from modules.utils.textblock import TextBlock, sort_blk_list
-from modules.utils.pipeline_utils import generate_mask, get_language_code, inpaint_map
+from modules.utils.pipeline_utils import generate_mask, inpaint_map
 from modules.utils.translator_utils import set_upper_case
-from container.app_container import AppContainer
 
 
 class APIPipelineController:
@@ -15,12 +20,12 @@ class APIPipelineController:
     @inject
     def __init__(
         self,
-        detection_processor=Provide[AppContainer.detection_processor],
-        ocr_processor=Provide[AppContainer.ocr_processor],
-        translator=Provide[AppContainer.translator],
-        inpainter=Provide[AppContainer.inpainter],
-        text_renderer=Provide[AppContainer.text_renderer],
-        config=Provide[AppContainer.config],
+        detection_processor: TextBlockDetectorProcessor,
+        ocr_processor: OCRProcessor,
+        translator: Translator,
+        inpainter: InPaintingProcessor,
+        text_renderer: TextRenderer,
+        config=any,
     ):
         self.detection_processor = detection_processor
         self.ocr_processor = ocr_processor
@@ -29,33 +34,26 @@ class APIPipelineController:
         self.text_renderer = text_renderer
         self.config = config
 
+        # Initalize
+        self.detection_processor.initialize()
+        self.ocr_processor.initialize()
+        self.translator.initialize()
+        self.inpainter.initialize()
+        self.text_renderer.initialize()
+
         # Cache cho các models
-        self.block_detector_cache = None
-        self.inpainter_cache = None
-        self.cached_inpainter_key = None
 
     def detect_blocks(self, image: np.ndarray) -> List[TextBlock]:
         """Detect text blocks trong image"""
-        if self.block_detector_cache is None:
-            self.block_detector_cache = self.detection_processor
-            self.block_detector_cache.initialize()
 
-        blk_list = self.block_detector_cache.detect(image)
+        blk_list = self.detection_processor.detect(image)
         return blk_list
 
     def process_ocr(
         self, image: np.ndarray, blk_list: List[TextBlock], source_lang: str
     ) -> List[TextBlock]:
         """Process OCR trên image với text blocks"""
-        # Initialize OCR với config
-        ocr_config = {
-            "model": self.config.ocr.model(),
-            "device": self.config.ocr.device(),
-            "expansion_percentage": self.config.ocr.expansion_percentage(),
-            "credentials": self.config.credentials(),
-        }
 
-        self.ocr_processor.initialize(ocr_config, source_lang)
         self.ocr_processor.process(image, blk_list)
 
         return blk_list
@@ -69,30 +67,11 @@ class APIPipelineController:
         extra_context: str = "",
     ) -> List[TextBlock]:
         """Translate text blocks"""
-        # Create translator với languages
-        translator_config = {
-            "model": self.config.translation.model(),
-            "device": self.config.translation.device(),
-            "temperature": self.config.translation.temperature(),
-            "top_p": self.config.translation.top_p(),
-            "max_tokens": self.config.translation.max_tokens(),
-            "image_input_enabled": self.config.translation.image_input_enabled(),
-            "extra_context": extra_context,
-            "uppercase": self.config.translation.uppercase(),
-            "credentials": self.config.credentials(),
-        }
 
-        translator = self.translator(
-            config=translator_config,
-            main_page=None,
-            source_lang=source_lang,
-            target_lang=target_lang,
-        )
-
-        translator.translate(blk_list, image, extra_context)
+        self.translator.translate(blk_list, image, extra_context)
 
         # Apply uppercase nếu cần
-        if translator_config.get("uppercase", False):
+        if self.translator.config.get("uppercase", False):
             set_upper_case(blk_list, True)
 
         return blk_list
@@ -104,23 +83,11 @@ class APIPipelineController:
         # Generate mask từ text blocks
         mask = generate_mask(image, blk_list)
 
-        # Get inpainter
-        if (
-            self.inpainter_cache is None
-            or self.cached_inpainter_key != self.config.inpainting.model()
-        ):
-
-            device = "cuda" if use_gpu else "cpu"
-            inpainter_key = self.config.inpainting.model()
-            InpainterClass = inpaint_map[inpainter_key]
-            self.inpainter_cache = InpainterClass(device)
-            self.cached_inpainter_key = inpainter_key
-
         # Inpaint
         from modules.inpainting.schema import Config
 
         config = Config(hd_strategy="Original")
-        inpainted_image = self.inpainter_cache(image, mask, config)
+        inpainted_image = self.inpainter.inpaint(image, mask, config)
         inpainted_image = cv2.convertScaleAbs(inpainted_image)
 
         return inpainted_image

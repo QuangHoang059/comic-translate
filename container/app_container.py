@@ -7,25 +7,10 @@ import json
 from controller.api_pipeline_controller import APIPipelineController
 from modules.detection.processor import TextBlockDetectorProcessor
 from modules.ocr.processor import OCRProcessor
+from modules.rendering.render_api import TextRenderer
 from modules.translation.processor import Translator
 from modules.inpainting.factory import InPaintModelFactory
 from modules.utils.pipeline_utils import inpaint_map
-
-
-class TextRenderer:
-    """Class để render text lên image"""
-
-    def __init__(self, config: dict):
-        self.config = config
-        self.font_size = config.get("font_size", 12)
-        self.font_color = config.get("font_color", "#000000")
-        self.background_color = config.get("background_color", "#FFFFFF")
-        self.line_spacing = config.get("line_spacing", 1.2)
-
-    def render_text(self, image, text_blocks):
-        """Render text lên image"""
-        # Implementation sẽ được thêm sau
-        return image
 
 
 class AppContainer(containers.DeclarativeContainer):
@@ -36,11 +21,6 @@ class AppContainer(containers.DeclarativeContainer):
             "controller.translate_controler",
             "controller.api_pipeline_controller",
             "api.router.api",
-            "modules.detection.processor",
-            "modules.ocr.processor",
-            "modules.translation.processor",
-            "modules.inpainting.factory",
-            "modules.rendering.render",
         ]
     )
     # Configuration
@@ -106,7 +86,18 @@ class AppContainer(containers.DeclarativeContainer):
     )
 
     # OCR module
-    ocr_processor = providers.Singleton(OCRProcessor)
+    ocr_processor = providers.Singleton(
+        OCRProcessor,
+        config=providers.Singleton(
+            lambda config: {
+                "model": config.ocr.model(),
+                "device": config.ocr.device(),
+                "expansion_percentage": config.ocr.expansion_percentage(),
+                "source_lang": config.ocr.language(),
+            },
+            config=config,
+        ),
+    )
 
     # Translation module
     translator = providers.Factory(
@@ -114,6 +105,8 @@ class AppContainer(containers.DeclarativeContainer):
         config=providers.Singleton(
             lambda config: {
                 "model": config.translation.model(),
+                "source_lang": config.translation.source_lang(),
+                "target_lang": config.translation.target_lang(),
                 "device": config.translation.device(),
                 "temperature": config.translation.temperature(),
                 "top_p": config.translation.top_p(),
@@ -125,15 +118,12 @@ class AppContainer(containers.DeclarativeContainer):
             },
             config=config,
         ),
-        main_page=None,  # Sẽ được inject khi cần
-        source_lang="",
-        target_lang="",
     )
 
     # Inpainting module
     inpainter = providers.Singleton(
         lambda config: InPaintModelFactory.create_engine(
-            {"device": config.inpainting.device()}, config.inpainting.model()
+            {"device": config.inpainting.device(), "model": config.inpainting.model()}
         ),
         config=config,
     )

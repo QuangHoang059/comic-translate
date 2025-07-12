@@ -14,25 +14,26 @@ class Translator:
     - LLM-based translators (e.g GPT, Claude, Gemini, Deepseek, Custom)
     """
 
-    def __init__(
-        self, config: dict, main_page, source_lang: str = "", target_lang: str = ""
-    ):
+    def __init__(self, config: dict = {}):
         """
         Initialize translator with settings and languages.
 
         Args:
-            main_page: Main application page with settings
-            source_lang: Source language name (localized)
-            target_lang: Target language name (localized)
+            config: Main application page with settings
         """
         self.config = config
 
-        self.translator_key = self._get_translator_key(self.config.get("model"))
+    def initialize(self, config: dict = {}):
+        if config:
+            self.config = config
 
-        self.source_lang = source_lang
-        self.source_lang_en = self._get_english_lang(config, self.source_lang)
-        self.target_lang = target_lang
-        self.target_lang_en = self._get_english_lang(config, self.target_lang)
+        self.translator_key = self._get_translator_key(
+            self.config.get("model", "GPT-4o")
+        )
+        self.source_lang = self.config.get("source_lang", "English")
+        self.source_lang_en = self._get_english_lang(self.config, self.source_lang)
+        self.target_lang = self.config.get("target_lang", "Vietnamese")
+        self.target_lang_en = self._get_english_lang(self.config, self.target_lang)
 
         # Create appropriate engine using factory
         self.engine = TranslationFactory.create_engine(

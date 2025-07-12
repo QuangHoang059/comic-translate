@@ -14,21 +14,12 @@
     "model": "Default",
     "device": "cpu",
     "expansion_percentage": 5,
-    "languages": {
-      "Japanese": "Japanese",
-      "Korean": "Korean", 
-      "Chinese": "Chinese",
-      "Russian": "Russian",
-      "English": "English",
-      "French": "French",
-      "German": "German",
-      "Dutch": "Dutch",
-      "Spanish": "Spanish",
-      "Italian": "Italian"
-    }
+    "language": "English"
   },
   "translation": {
     "model": "GPT-4o",
+    "source_lang": "English",
+    "target_lang": "Vietnamese",
     "device": "cpu",
     "temperature": 1.0,
     "top_p": 0.95,
