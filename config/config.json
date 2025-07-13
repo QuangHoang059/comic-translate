@@ -39,8 +39,8 @@
     "device": "cpu"
   },
   "rendering": {
-    "font_path": "fonts/simfang.ttf",
-    "font_size": 12,
+    "font_path": "fonts/Roboto-Regular.ttf",
+    "font_size": 40,
     "font_color": "#000000",
     "background_color": "#FFFFFF",
     "line_spacing": 1.2
