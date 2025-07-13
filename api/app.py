@@ -11,6 +11,7 @@ from fastapi.middleware.cors import CORSMiddleware
 from api.router import api
 
 
+@inject
 def create_app() -> FastAPI:
     """Create and configure FastAPI application"""
 
@@ -40,7 +41,7 @@ def create_app() -> FastAPI:
 
 @inject
 def initializeStorage(
-    storage_config: dict = Depends(Provide[AppContainer.storage_config]),
+    storage_config: dict = Provide[AppContainer.storage_config],
 ):
     os.makedirs(storage_config["upload_dir"], exist_ok=True)
     os.makedirs(storage_config["results_dir"], exist_ok=True)
