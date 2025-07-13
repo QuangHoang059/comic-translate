@@ -9,7 +9,7 @@ from modules.detection.processor import TextBlockDetectorProcessor
 from modules.ocr.processor import OCRProcessor
 from modules.rendering.render_api import TextRenderer
 from modules.translation.processor import Translator
-from modules.inpainting.factory import InPaintModelFactory
+from modules.inpainting.processor import InPaintingProcessor
 from modules.utils.pipeline_utils import inpaint_map
 
 
@@ -85,12 +85,11 @@ class AppContainer(containers.DeclarativeContainer):
 
     # Inpainting module
     inpainter = providers.Singleton(
-        lambda config: InPaintModelFactory.create_engine(
-            {
-                "device": config["inpainting"]["device"],
-                "model": config["inpainting"]["model"],
-            }
-        ),
+        InPaintingProcessor,
+        lambda config: {
+            "device": config["inpainting"]["device"],
+            "model": config["inpainting"]["model"],
+        },
         config=config,
     )
 
