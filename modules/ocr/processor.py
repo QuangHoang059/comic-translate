@@ -14,8 +14,8 @@ class OCRProcessor:
     based on settings and language.
     """
 
-    def __init__(self):
-        self.config: dict = {}
+    def __init__(self, config: dict = {}):
+        self.config: dict = config
         self.source_lang = None
         self.source_lang_english = None
 
