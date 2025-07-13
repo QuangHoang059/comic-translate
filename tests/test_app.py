@@ -1,10 +1,4 @@
-# from app.ui.main_window import ComicTranslateUI
+from modules.rendering.render_api import TextRenderer, cv2_to_pil
 
-# def test_comic_translate_ui_basic(qtbot):
-#     widget = ComicTranslateUI()
-#     qtbot.addWidget(widget)
-
-#     widget.show()
-
-#     assert widget.isVisible()
-#     assert widget.windowTitle() == "Comic Translate"
+a = TextRenderer({})
+print(a.font_path)

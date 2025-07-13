@@ -39,6 +39,7 @@
     "device": "cpu"
   },
   "rendering": {
+    "font_path": "fonts/simfang.ttf",
     "font_size": 12,
     "font_color": "#000000",
     "background_color": "#FFFFFF",
