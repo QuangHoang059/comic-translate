@@ -27,8 +27,8 @@ async def root():
 @inject
 async def upload_image(
     file: UploadFile = File(...),
-    source_language: str = Form(...),
-    target_language: str = Form(...),
+    source_language: str = Form(default="English"),
+    target_language: str = Form(default="Vietnamese"),
     storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     # Generate unique ID for this image
@@ -63,7 +63,7 @@ async def detect_blocks(
     # Load image
     image_path = image_store[image_id]["path"]
     image = cv2.imread(image_path)
-
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     # Detect blocks
     blk_list = pipeline.detect_blocks(image)
 
@@ -104,6 +104,7 @@ async def ocr_image(
     # Load image and blocks
     image_path = image_store[image_id]["path"]
     image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     blk_list = image_store[image_id]["blocks"]
     source_lang = image_store[image_id]["source_language"]
 
@@ -143,6 +144,7 @@ async def translate_image(
     # Load image and blocks
     image_path = image_store[image_id]["path"]
     image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     blk_list = image_store[image_id]["blocks"]
     source_lang = image_store[image_id]["source_language"]
     target_lang = image_store[image_id]["target_language"]
@@ -193,6 +195,7 @@ async def inpaint_image(
     # Load image and blocks
     image_path = image_store[image_id]["path"]
     image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     blk_list = image_store[image_id]["blocks"]
 
     # Inpaint
@@ -229,7 +232,7 @@ async def render_translated_image(
     # Load inpainted image
     inpainted_path = image_store[image_id]["inpainted_path"]
     inpainted_image = cv2.imread(inpainted_path)
-
+    inpainted_image = cv2.cvtColor(inpainted_image, cv2.COLOR_BGR2RGB)
     # Get blocks
     blk_list = image_store[image_id]["blocks"]
 
@@ -283,6 +286,7 @@ async def translate_all_steps(
     # Load image
     image_path = image_store[image_id]["path"]
     image = cv2.imread(image_path)
+    image = cv2.cvtColor(image, cv2.COLOR_BGR2RGB)
     source_lang = image_store[image_id]["source_language"]
     target_lang = image_store[image_id]["target_language"]
 

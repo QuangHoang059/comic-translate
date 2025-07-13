@@ -12,7 +12,9 @@ from api.router import api
 
 
 @inject
-def create_app() -> FastAPI:
+def create_app(
+    storage_config: dict = Provide[AppContainer.storage_config],
+) -> FastAPI:
     """Create and configure FastAPI application"""
 
     app = FastAPI(
@@ -34,14 +36,11 @@ def create_app() -> FastAPI:
     app.include_router(api.router)
     app.include_router(health.router)
 
-    initializeStorage()
+    initializeStorage(storage_config)
 
     return app
 
 
-@inject
-def initializeStorage(
-    storage_config: dict = Provide[AppContainer.storage_config],
-):
+def initializeStorage(storage_config: dict):
     os.makedirs(storage_config["upload_dir"], exist_ok=True)
     os.makedirs(storage_config["results_dir"], exist_ok=True)
