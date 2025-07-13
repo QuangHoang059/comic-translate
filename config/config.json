@@ -12,6 +12,9 @@
   },
   "ocr": {
     "model": "Default",
+    "credentials": {
+      "api_key": ""
+    },
     "device": "cpu",
     "expansion_percentage": 5,
     "language": "English"
@@ -21,6 +24,9 @@
     "source_lang": "English",
     "target_lang": "Vietnamese",
     "device": "cpu",
+    "credentials": {
+      "api_key": ""
+    },
     "temperature": 1.0,
     "top_p": 0.95,
     "max_tokens": 5000,

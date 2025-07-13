@@ -30,40 +30,6 @@ class AppContainer(containers.DeclarativeContainer):
             with open(config_path, "r", encoding="utf-8") as f:
                 config_data = json.load(f)
             cls.config.from_dict(config_data)
-        else:
-            # Default config nếu file không tồn tại
-            cls.config.from_dict(
-                {
-                    "app": {
-                        "name": "Comic Translate",
-                        "version": "1.0.0",
-                        "debug": False,
-                    },
-                    "detection": {
-                        "model": "RT-DETR-V2",
-                        "device": "cpu",
-                        "confidence_threshold": 0.3,
-                    },
-                    "ocr": {
-                        "model": "Default",
-                        "device": "cpu",
-                        "expansion_percentage": 5,
-                    },
-                    "translation": {
-                        "model": "GPT-4o",
-                        "device": "cpu",
-                        "temperature": 1.0,
-                    },
-                    "inpainting": {"model": "lama", "device": "cpu"},
-                    "rendering": {"font_size": 12, "font_color": "#000000"},
-                    "credentials": {},
-                    "storage": {
-                        "upload_dir": "uploads",
-                        "results_dir": "results",
-                        "models_dir": "models",
-                    },
-                }
-            )
 
     storage_config = providers.Resource(config.storage)
 
@@ -90,6 +56,7 @@ class AppContainer(containers.DeclarativeContainer):
                 "device": config.ocr.device(),
                 "expansion_percentage": config.ocr.expansion_percentage(),
                 "source_lang": config.ocr.language(),
+                "credentials": config.credentials(),
             },
             config=config,
         ),
@@ -110,7 +77,7 @@ class AppContainer(containers.DeclarativeContainer):
                 "image_input_enabled": config.translation.image_input_enabled(),
                 "extra_context": config.translation.extra_context(),
                 "uppercase": config.translation.uppercase(),
-                "credentials": config.credentials(),
+                "credentials": config.translation.credentials(),
             },
             config=config,
         ),
