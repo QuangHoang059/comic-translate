@@ -77,6 +77,7 @@ async def detect_blocks(
                     blk.xyxy.tolist() if hasattr(blk.xyxy, "tolist") else list(blk.xyxy)
                 ),
                 angle=blk.angle,
+                alignment=blk.alignment,
             )
         )
 
@@ -116,7 +117,13 @@ async def ocr_image(
     for i, blk in enumerate(blk_list):
         xyxy = list(blk.xyxy)
         blocks.append(
-            TextBlockData(id=f"{i}", xyxy=xyxy, text=blk.text, angle=blk.angle)
+            TextBlockData(
+                id=f"{i}",
+                xyxy=xyxy,
+                text=blk.text,
+                angle=blk.angle,
+                alignment=blk.alignment,
+            )
         )
 
     # Update image store
@@ -165,6 +172,7 @@ async def translate_image(
                 text=blk.text,
                 translation=blk.translation,
                 angle=blk.angle,
+                alignment=blk.alignment,
             )
         )
 
@@ -211,7 +219,12 @@ async def inpaint_image(
     image_store[image_id]["inpainted_path"] = result_path
     image_store[image_id]["status"] = "inpainted"
 
-    return {"image_id": image_id, "status": "inpainted", "result_path": result_path}
+    return ProcessResponse(
+        image_id=image_id,
+        blocks=[],
+        status="inpainted",
+        result_path=result_path,
+    )
 
 
 @router.post("/render/{image_id}")
@@ -250,7 +263,12 @@ async def render_translated_image(
     image_store[image_id]["rendered_path"] = result_path
     image_store[image_id]["status"] = "rendered"
 
-    return {"image_id": image_id, "status": "rendered", "result_path": result_path}
+    return ProcessResponse(
+        image_id=image_id,
+        blocks=[],
+        status="inpainted",
+        result_path=result_path,
+    )
 
 
 @router.get("/result/{image_id}")

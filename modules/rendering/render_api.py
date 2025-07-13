@@ -68,7 +68,8 @@ class TextRenderer:
                 init_font_size = blk.max_font_size
             if blk.font_color:
                 colour = blk.font_color
-
+            if not blk.alignment:
+                blk.alignment = "center"
             translation, font_size = pil_word_wrap(
                 image,
                 tbbox_top_left,

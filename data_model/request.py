@@ -16,9 +16,11 @@ class TextBlockData(BaseModel):
     text: Optional[str] = None
     translation: Optional[str] = None
     angle: float = 0.0
+    alignment: str = "left"
 
 
 class ProcessResponse(BaseModel):
     image_id: str
     blocks: List[TextBlockData]
     status: str
+    result_path: str = ""
