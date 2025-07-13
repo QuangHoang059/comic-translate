@@ -35,7 +35,7 @@
     "uppercase": false
   },
   "inpainting": {
-    "model": "lama",
+    "model": "LaMa",
     "device": "cpu"
   },
   "rendering": {

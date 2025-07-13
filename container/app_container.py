@@ -31,82 +31,39 @@ class AppContainer(containers.DeclarativeContainer):
                 config_data = json.load(f)
             cls.config.from_dict(config_data)
 
+    # Resource config sections
+    detection_config = providers.Resource(config.detection)
+    ocr_config = providers.Resource(config.ocr)
+    translation_config = providers.Resource(config.translation)
+    inpainting_config = providers.Resource(config.inpainting)
+    rendering_config = providers.Resource(config.rendering)
     storage_config = providers.Resource(config.storage)
 
-    # Detection module
+    # Modules
+
     detection_processor = providers.Singleton(
         TextBlockDetectorProcessor,
-        config=providers.Singleton(
-            lambda config: {
-                "model": config["detection"]["model"],
-                "device": config["detection"]["device"],
-                "confidence_threshold": config["detection"]["confidence_threshold"],
-                "expansion_percentage": config["detection"]["expansion_percentage"],
-            },
-            config=config,
-        ),
+        config=detection_config,
     )
 
-    # OCR module
     ocr_processor = providers.Singleton(
         OCRProcessor,
-        config=providers.Singleton(
-            lambda config: {
-                "model": config["ocr"]["model"],
-                "device": config["ocr"]["device"],
-                "expansion_percentage": config["ocr"]["expansion_percentage"],
-                "source_lang": config["ocr"]["language"],
-                "credentials": config["ocr"]["credentials"],
-            },
-            config=config,
-        ),
+        config=ocr_config,
     )
 
-    # Translation module
-    translator = providers.Factory(
+    translator = providers.Singleton(
         Translator,
-        config=providers.Singleton(
-            lambda config: {
-                "model": config["translation"]["model"],
-                "source_lang": config["translation"]["source_lang"],
-                "target_lang": config["translation"]["target_lang"],
-                "device": config["translation"]["device"],
-                "temperature": config["translation"]["temperature"],
-                "top_p": config["translation"]["top_p"],
-                "max_tokens": config["translation"]["max_tokens"],
-                "image_input_enabled": config["translation"]["image_input_enabled"],
-                "extra_context": config["translation"]["extra_context"],
-                "uppercase": config["translation"]["uppercase"],
-                "credentials": config["translation"]["credentials"],
-            },
-            config=config,
-        ),
+        config=translation_config,
     )
 
-    # Inpainting module
     inpainter = providers.Singleton(
         InPaintingProcessor,
-        config=providers.Singleton(
-            lambda config: {
-                "device": config["inpainting"]["device"],
-                "model": config["inpainting"]["model"],
-            },
-            config=config,
-        ),
+        config=inpainting_config,
     )
 
-    # Rendering module
     text_renderer = providers.Singleton(
         TextRenderer,
-        config=providers.Singleton(
-            lambda config: {
-                "font_size": config["rendering"]["font_size"],
-                "font_color": config["rendering"]["font_color"],
-                "background_color": config["rendering"]["background_color"],
-                "line_spacing": config["rendering"]["line_spacing"],
-            },
-            config=config,
-        ),
+        config=rendering_config,
     )
 
     # API pipeline (headless version)
