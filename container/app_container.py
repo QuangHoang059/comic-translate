@@ -56,7 +56,7 @@ class AppContainer(containers.DeclarativeContainer):
                 "device": config["ocr"]["device"],
                 "expansion_percentage": config["ocr"]["expansion_percentage"],
                 "source_lang": config["ocr"]["language"],
-                "credentials": config.credentials(),
+                "credentials": config["ocr"]["credentials"],
             },
             config=config,
         ),
