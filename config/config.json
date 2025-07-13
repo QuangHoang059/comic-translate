@@ -20,7 +20,7 @@
     "language": "English"
   },
   "translation": {
-    "model": "GPT-4o",
+    "model": "Google Translate",
     "source_lang": "English",
     "target_lang": "Vietnamese",
     "device": "cpu",
