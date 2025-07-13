@@ -28,13 +28,13 @@ class TextRenderer:
         """Render text lên image"""
         # Implementation sẽ được thêm sau
         return self.draw_text(
-            image,
-            text_blocks,
-            self.font_path,
-            self.font_size,
-            self.font_color,
-            self.background_color,
-            self.line_spacing,
+            image=image,
+            blk_list=text_blocks,
+            font_pth=self.font_path,
+            colour=self.font_color,
+            init_font_size=self.font_size,
+            min_font_size=10,  # hoặc self.min_font_size nếu có
+            outline=self.line_spacing,  # nếu line_spacing là bool
         )
 
     def draw_text(
