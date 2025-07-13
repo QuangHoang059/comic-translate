@@ -86,11 +86,13 @@ class AppContainer(containers.DeclarativeContainer):
     # Inpainting module
     inpainter = providers.Singleton(
         InPaintingProcessor,
-        lambda config: {
-            "device": config["inpainting"]["device"],
-            "model": config["inpainting"]["model"],
-        },
-        config=config,
+        config=providers.Singleton(
+            lambda config: {
+                "device": config["inpainting"]["device"],
+                "model": config["inpainting"]["model"],
+            },
+            config=config,
+        ),
     )
 
     # Rendering module
