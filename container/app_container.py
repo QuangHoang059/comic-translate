@@ -38,10 +38,10 @@ class AppContainer(containers.DeclarativeContainer):
         TextBlockDetectorProcessor,
         config=providers.Singleton(
             lambda config: {
-                "model": config.detection.model(),
-                "device": config.detection.device(),
-                "confidence_threshold": config.detection.confidence_threshold(),
-                "expansion_percentage": config.detection.expansion_percentage(),
+                "model": config["detection"]["model"],
+                "device": config["detection"]["device"],
+                "confidence_threshold": config["detection"]["confidence_threshold"],
+                "expansion_percentage": config["detection"]["expansion_percentage"],
             },
             config=config,
         ),
@@ -52,10 +52,10 @@ class AppContainer(containers.DeclarativeContainer):
         OCRProcessor,
         config=providers.Singleton(
             lambda config: {
-                "model": config.ocr.model(),
-                "device": config.ocr.device(),
-                "expansion_percentage": config.ocr.expansion_percentage(),
-                "source_lang": config.ocr.language(),
+                "model": config["ocr"]["model"],
+                "device": config["ocr"]["device"],
+                "expansion_percentage": config["ocr"]["expansion_percentage"],
+                "source_lang": config["ocr"]["language"],
                 "credentials": config.credentials(),
             },
             config=config,
@@ -67,17 +67,17 @@ class AppContainer(containers.DeclarativeContainer):
         Translator,
         config=providers.Singleton(
             lambda config: {
-                "model": config.translation.model(),
-                "source_lang": config.translation.source_lang(),
-                "target_lang": config.translation.target_lang(),
-                "device": config.translation.device(),
-                "temperature": config.translation.temperature(),
-                "top_p": config.translation.top_p(),
-                "max_tokens": config.translation.max_tokens(),
-                "image_input_enabled": config.translation.image_input_enabled(),
-                "extra_context": config.translation.extra_context(),
-                "uppercase": config.translation.uppercase(),
-                "credentials": config.translation.credentials(),
+                "model": config["translation"]["model"],
+                "source_lang": config["translation"]["source_lang"],
+                "target_lang": config["translation"]["target_lang"],
+                "device": config["translation"]["device"],
+                "temperature": config["translation"]["temperature"],
+                "top_p": config["translation"]["top_p"],
+                "max_tokens": config["translation"]["max_tokens"],
+                "image_input_enabled": config["translation"]["image_input_enabled"],
+                "extra_context": config["translation"]["extra_context"],
+                "uppercase": config["translation"]["uppercase"],
+                "credentials": config["translation"]["credentials"],
             },
             config=config,
         ),
@@ -86,7 +86,10 @@ class AppContainer(containers.DeclarativeContainer):
     # Inpainting module
     inpainter = providers.Singleton(
         lambda config: InPaintModelFactory.create_engine(
-            {"device": config.inpainting.device(), "model": config.inpainting.model()}
+            {
+                "device": config["inpainting"]["device"],
+                "model": config["inpainting"]["model"],
+            }
         ),
         config=config,
     )
@@ -96,10 +99,10 @@ class AppContainer(containers.DeclarativeContainer):
         TextRenderer,
         config=providers.Singleton(
             lambda config: {
-                "font_size": config.rendering.font_size(),
-                "font_color": config.rendering.font_color(),
-                "background_color": config.rendering.background_color(),
-                "line_spacing": config.rendering.line_spacing(),
+                "font_size": config["rendering"]["font_size"],
+                "font_color": config["rendering"]["font_color"],
+                "background_color": config["rendering"]["background_color"],
+                "line_spacing": config["rendering"]["line_spacing"],
             },
             config=config,
         ),
