@@ -17,11 +17,7 @@ class AppContainer(containers.DeclarativeContainer):
     """Container chính quản lý dependency injection cho toàn bộ ứng dụng"""
 
     wiring_config = containers.WiringConfiguration(
-        modules=[
-            "controller.translate_controler",
-            "controller.api_pipeline_controller",
-            "api.router.api",
-        ]
+        modules=["controller.api_pipeline_controller", "api.router.api", "api.app"]
     )
     # Configuration
     config = providers.Configuration()

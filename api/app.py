@@ -2,12 +2,13 @@ import sys
 import os
 from dependency_injector.wiring import Provide, inject
 
+from api.router import health
 from container.app_container import AppContainer
 
 sys.path.append(os.path.abspath(os.path.dirname(__file__)))
 from fastapi import Depends, FastAPI
 from fastapi.middleware.cors import CORSMiddleware
-from api.router.api import router
+from api.router import api
 
 
 def create_app() -> FastAPI:
@@ -29,21 +30,16 @@ def create_app() -> FastAPI:
     )
 
     # Include routers
-    app.include_router(router)
+    app.include_router(api.router)
+    app.include_router(health.router)
 
-    @app.get("/")
-    async def root():
-        return {"message": "Comic Translate API is running"}
-
-    @app.get("/health")
-    async def health_check():
-        return {"status": "healthy"}
+    initializeStorage()
 
     return app
 
 
 @inject
-def InitializeStorage(
+def initializeStorage(
     storage_config: dict = Depends(Provide[AppContainer.storage_config]),
 ):
     os.makedirs(storage_config["upload_dir"], exist_ok=True)

@@ -18,6 +18,11 @@ router = APIRouter(prefix="/api/v1", tags=["translation"])
 image_store = {}
 
 
+@router.get("/")
+async def root():
+    return {"message": "Comic Translate API is running"}
+
+
 @router.post("/upload", response_model=ProcessResponse)
 @inject
 async def upload_image(

@@ -6,7 +6,6 @@ from dependency_injector.wiring import inject, Provide
 from modules.inpainting.processor import InPaintingProcessor
 from modules.rendering.render_api import TextRenderer
 from modules.detection.processor import TextBlockDetectorProcessor
-from modules.inpainting.factory import InPaintModelFactory
 from modules.ocr.processor import OCRProcessor
 from modules.translation.processor import Translator
 from modules.utils.textblock import TextBlock, sort_blk_list
